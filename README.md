@@ -14,13 +14,34 @@ Then `bundle install`.
 
 ## Setup
 
-Create `config/initializers/ascona.rb`:
+Generate the initializer:
+
+```bash
+rails generate ascona:install
+```
+
+Or create `config/initializers/ascona.rb` manually:
 
 ```ruby
 Ascona.configure do |config|
   config.icon_path = "app/assets/icons"
   config.default_library = :lucide
 end
+```
+
+## Supported Libraries
+
+| Library | Link |
+|---------|------|
+| Lucide | [lucide.dev](https://lucide.dev) |
+
+
+## Downloading Icons
+
+```bash
+ascona list                          # Show available libraries
+ascona download lucide               # Download all icons
+ascona download heroicons --variant=outline  # Download specific variant
 ```
 
 ## Folder Structure
@@ -33,7 +54,10 @@ app/assets/icons/
     star.svg
     arrow-left.svg
   heroicons/
-    check.svg
+    outline/
+      check.svg
+    solid/
+      check.svg
 ```
 
 The name of the folder will be used as the library name.
@@ -43,10 +67,20 @@ The name of the folder will be used as the library name.
 ```erb
 <%= icon "star" %>
 <%= icon "star", class: "w-5 h-5" %>
-<%= icon "star", library: :heroicons %>
+<%= icon "star", library: :heroicons, variant: :outline %>
 ```
 
 Attributes are added directly to the `<svg>` tag.
+
+## Variants
+
+Some libraries have variants. Set defaults per library (for rendering only):
+
+```ruby
+config.default_variants = { heroicons: :outline }
+```
+
+Note: Some libraries have no default variant. You must specify one when downloading (`--variant=outline`) and when rendering (`variant: :outline`) unless set in config.
 
 ## Non-Rails
 
