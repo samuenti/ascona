@@ -17,6 +17,7 @@ module Ascona
     end
 
     desc "download LIBRARY", "Download icons from a library"
+    option :variant, type: :string, desc: "Download specific variant only"
     def download(library)
       unless Library.available.include?(library)
         puts "Unknown library: #{library}"
@@ -26,7 +27,7 @@ module Ascona
 
       destination = File.join(Ascona.configuration.icon_path, library)
       puts "Downloading #{library} icons to #{destination}..."
-      Library.download(library, destination)
+      Library.download(library, destination, variant: options[:variant])
       puts "Done!"
     end
   end

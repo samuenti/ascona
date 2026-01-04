@@ -19,14 +19,27 @@ module Ascona
       Ascona::Libraries.const_get(name.capitalize)::CONFIG
     end
 
-    def self.download(name, destination)
+    def self.download(name, destination, variant: nil)
       config = config_for(name)
 
       Dir.mktmpdir do |tmp_dir|
-        tar_path = File.join(tmp_dir, "repo.tar.gz")
-        download_tar(config[:repo], config[:branch], tar_path)
-        extract_tar(tar_path, tmp_dir)
-        copy_icons(tmp_dir, config[:path], destination)
+        extracted_dir = download_and_extract(config, tmp_dir)
+        copy_to_destination(config, extracted_dir, destination, variant)
+      end
+    end
+
+    def self.download_and_extract(config, tmp_dir)
+      tar_path = File.join(tmp_dir, "repo.tar.gz")
+      download_tar(config[:repo], config[:branch], tar_path)
+      extract_tar(tar_path, tmp_dir)
+      Dir.glob(File.join(tmp_dir, "*")).find { |f| File.directory?(f) }
+    end
+
+    def self.copy_to_destination(config, extracted_dir, destination, variant)
+      if config[:variants]
+        copy_variants(extracted_dir, config[:variants], destination, variant)
+      else
+        copy_icons(extracted_dir, config[:path], destination)
       end
     end
 
@@ -55,8 +68,16 @@ module Ascona
       end
     end
 
-    def self.copy_icons(tmp_dir, icons_path, destination)
-      extracted_dir = Dir.glob(File.join(tmp_dir, "*")).find { |f| File.directory?(f) }
+    def self.copy_variants(extracted_dir, variants, destination, only_variant)
+      variants.each do |variant_name, variant_path|
+        next if only_variant && only_variant != variant_name
+
+        variant_dest = File.join(destination, variant_name)
+        copy_icons(extracted_dir, variant_path, variant_dest)
+      end
+    end
+
+    def self.copy_icons(extracted_dir, icons_path, destination)
       source = File.join(extracted_dir, icons_path)
 
       FileUtils.mkdir_p(destination)
@@ -65,6 +86,7 @@ module Ascona
       end
     end
 
-    private_class_method :download_tar, :extract_tar, :extract_entries, :copy_icons
+    private_class_method :download_and_extract, :copy_to_destination,
+                         :download_tar, :extract_tar, :extract_entries, :copy_variants, :copy_icons
   end
 end
