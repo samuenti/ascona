@@ -10,9 +10,8 @@ module Ascona
       svg = Ascona.registry.get(name.to_sym, library: library.to_sym, variant: variant)
       raise ArgumentError, "Icon '#{name}' not found in library '#{library}'" unless svg
 
-      return svg if attributes.empty?
-
-      inject_attributes(svg, attributes)
+      svg = inject_attributes(svg, attributes) unless attributes.empty?
+      svg.html_safe
     end
 
     private
