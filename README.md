@@ -66,11 +66,22 @@ The name of the folder will be used as the library name.
 
 ```erb
 <%= icon "star" %>
+<%= icon "star", size: 5 %>
 <%= icon "star", class: "w-5 h-5" %>
 <%= icon "star", library: :heroicons, variant: :outline %>
 ```
 
-Attributes are added directly to the `<svg>` tag.
+The `size` option adds Tailwind classes `w-{size} h-{size}`.
+
+## Default Size
+
+Set a default size for all icons:
+
+```ruby
+config.default_size = 5
+```
+
+Icons without an explicit `size` will use this default.
 
 ## Variants
 

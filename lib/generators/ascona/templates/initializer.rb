@@ -6,4 +6,7 @@ Ascona.configure do |config|
 
   # Set default variants per library (only for libraries with variants):
   # config.default_variants = { heroicons: :outline }
+
+  # Set default size for all icons (uses Tailwind classes w-{size} h-{size}):
+  # config.default_size = 5
 end
